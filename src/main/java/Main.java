@@ -1,29 +1,33 @@
 import java.util.Scanner;
-import java.util.concurrent.Callable;
+import java.util.concurrent.*;
 
-public class Main {
+public class Main  {
 
     private static int num;
 
-    public int getNum() {
-        return this.num;
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+
+        Future<Integer> integerFuture = singleThreadExecutor.submit(getCallableInteger());
+
+        System.out.println("Getting value: " + integerFuture.get());
+        System.out.println("Is it done? " + integerFuture.isDone());
+        System.out.println("======= Shutting Down Executor =======");
+        singleThreadExecutor.shutdown();
+        System.out.println("Is it done? " + integerFuture.isDone());
     }
 
-    public static void main(String[] args) {
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.print("Enter num: ");
-            num = scanner.nextInt();
-            System.out.println(getCallableInteger());
-        }
-
-    }
     public static Callable<Integer> getCallableInteger() {
         // your code here
-        System.out.println("STATUS: I am in getCallableInteger() method");
+        Scanner sc = new Scanner(System.in);
+
         Callable<Integer> callable = () -> {
-            System.out.println("STATUS: I am in call() method");
-            return num;
+            System.out.println(Thread.currentThread().getName() + " is responsible for this call");
+            System.out.print("Enter a number to store: ");
+            int numberToStore = sc.nextInt();
+            return numberToStore;
         };
+
         return callable;
     }
 
